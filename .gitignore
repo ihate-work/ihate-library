@@ -1,0 +1,23 @@
+# python
+build
+.venv
+venv
+*.pyc
+__pycache__
+*.egg-info
+
+# tools
+.mypy_cache
+.pytest_cache
+.ruff_cache
+htmlcov
+.coverage
+
+# env
+.env
+.env.local
+
+# misc
+.DS_Store
+logs
+*.log
