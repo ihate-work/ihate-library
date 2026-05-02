@@ -17,11 +17,11 @@ Handles both our own code (structlog) and third-party library code (stdlib loggi
 
 Python has three independent logging systems that all need to coexist:
 
-| System | Who uses it | Record format |
-|--------|------------|---------------|
-| **stdlib `logging`** | Third-party libraries (urllib3, httpx, sqlalchemy, etc.) | `LogRecord` with printf-style message |
-| **structlog** | Our application code | Event dict (Python dict with keyword args) |
-| **OTEL SDK** | Export pipeline | `LogData` with body + attributes + resource |
+| System               | Who uses it                                              | Record format                               |
+| -------------------- | -------------------------------------------------------- | ------------------------------------------- |
+| **stdlib `logging`** | Third-party libraries (urllib3, httpx, sqlalchemy, etc.) | `LogRecord` with printf-style message       |
+| **structlog**        | Our application code                                     | Event dict (Python dict with keyword args)  |
+| **OTEL SDK**         | Export pipeline                                          | `LogData` with body + attributes + resource |
 
 This package bridges all three.
 
@@ -69,7 +69,7 @@ stdlib log records don't go through structlog's processor chain. The `foreign_pr
 
 Exports: `setup_otel`, `setup_structlog`, `get_o11y`.
 
-On import, installs a minimal structlog config + default console handler so logs emitted *before* `setup_structlog()` are visible. The default handler is tagged with `_ihate_work_default = True` so `setup_structlog()` can find and remove it.
+On import, installs a minimal structlog config + default console handler so logs emitted _before_ `setup_structlog()` are visible. The default handler is tagged with `_ihate_work_default = True` so `setup_structlog()` can find and remove it.
 
 Also calls `setup_library_logging()` to silence noisy third-party loggers.
 
@@ -87,6 +87,7 @@ Also calls `setup_library_logging()` to silence noisy third-party loggers.
 4. **File handler**: `ProcessorFormatter` + `JSONRenderer`, writes to `$IHATE_WORK_LOG_DIR` if set.
 
 Parameters:
+
 - `level` — root logger level (default `INFO`)
 - `enable_console_log` / `console_level` — console handler toggle and level override
 - `console_suppress` — tuple of logger name prefixes to filter from console (default: `("sqlalchemy",)`)
@@ -96,6 +97,7 @@ Parameters:
 ### `defaults.py` — library log level defaults
 
 Silences noisy libraries:
+
 - **INFO**: httpcore, sqlalchemy, PIL, sse_starlette, watchfiles, urllib3, multipart
 - **WARN**: httpx, elastic_transport.transport, LiteLLM
 
@@ -108,11 +110,13 @@ Recursively coerces non-primitive values to `str` before OTLP export. Warns once
 ```python
 # Once at startup (entrypoint / __main__.py)
 import ihate_work.o11y as o11y
+
 o11y.setup_otel()
 o11y.setup_structlog()
 
 # Per module
 from ihate_work.o11y import get_o11y
+
 logger, tracer, meter = get_o11y(__name__)
 
 logger.info("importing", entity="subjects", count=1000)
@@ -147,8 +151,8 @@ Body contains only callsite data (developer kwargs). Runtime metadata (`thread.*
 
 ## Environment variables
 
-| Variable | Effect |
-|----------|--------|
+| Variable                      | Effect                                             |
+| ----------------------------- | -------------------------------------------------- |
 | `OTEL_EXPORTER_OTLP_ENDPOINT` | Enables OTLP export (e.g. `http://localhost:4318`) |
-| `OTEL_SERVICE_NAME` | Service name in OTEL resource attributes |
-| `IHATE_WORK_LOG_DIR` | Enables local JSONL file logging |
+| `OTEL_SERVICE_NAME`           | Service name in OTEL resource attributes           |
+| `IHATE_WORK_LOG_DIR`          | Enables local JSONL file logging                   |

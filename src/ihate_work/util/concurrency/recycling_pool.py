@@ -52,7 +52,8 @@ class RecyclingPool:
             if self._pool is not None:
                 raise RuntimeError("RecyclingPool is already entered")
             self._pool = ProcessPoolExecutor(
-                max_workers=self._max_workers, initializer=self._initializer,
+                max_workers=self._max_workers,
+                initializer=self._initializer,
             )
         return self
 
@@ -88,6 +89,7 @@ class RecyclingPool:
         with self._lock:
             self._pool.shutdown(wait=True)
             self._pool = ProcessPoolExecutor(
-                max_workers=self._max_workers, initializer=self._initializer,
+                max_workers=self._max_workers,
+                initializer=self._initializer,
             )
             self._tasks = 0

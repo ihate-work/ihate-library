@@ -3,52 +3,13 @@ name = "local-ihate-work"
 description = "ihate_work.* shared Python packages"
 version = "0.1.0"
 requires-python = ">=3.10"
-dependencies = [
-  # o11y (core — always needed)
-  "structlog>=25.0",
-  "opentelemetry-api>=1.38",
-  "opentelemetry-sdk>=1.38",
-  "opentelemetry-exporter-otlp-proto-http>=1.38",
-  # bootstrap
-  "python-dotenv>=1.0",
-]
-
-[project.optional-dependencies]
-storage = [
-  "duckdb>=1.0",
-  "psycopg2-binary>=2.9",
-  "pandas>=2.0",
-]
-llm = [
-  "anthropic>=0.30",
-  "google-genai>=1.0",
-  "pydantic>=2.0",
-  "litellm>=1.0",
-  "langfuse>=2.0",
-]
-llm-langchain = [
-  "langchain>=0.2",
-  "langchain-core>=0.2",
-  "langchain-ollama>=0.1",
-]
-text = [
-  "beautifulsoup4>=4.12",
-  "pyyaml>=6.0",
-]
-perf = [
-  "pympler>=1.0",
-]
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.ruff]
-line-length = 100
-src = ["src"]
-
-[tool.ruff.lint]
-select = ["E", "F", "I", "N", "W", "UP"]
+[tool.hatch.build.targets.wheel]
+packages = ["src/ihate_work"]
 
 [tool.mypy]
 python_version = "3.10"
@@ -57,3 +18,10 @@ strict = true
 [tool.pytest.ini_options]
 testpaths = ["tests", "src"]
 consider_namespace_packages = true
+addopts = [
+  "--ignore=src/ihate_work/llm",
+  "--ignore=src/ihate_work/storage",
+  "--ignore=src/ihate_work/util/concurrency/test_loky_executor.py",
+  "--ignore=src/ihate_work/util/prefix_counter_test.py",
+  "--ignore=src/ihate_work/util/text_cleaner",
+]

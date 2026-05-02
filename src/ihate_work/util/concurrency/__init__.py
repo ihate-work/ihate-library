@@ -13,6 +13,9 @@ __all__ = [
     "wait_pending",
 ]
 
-__getattr__ = create_optional_getattr(__name__, [
-    ("LokyExecutor", "ihate_work.util.concurrency.loky_executor", "loky"),
-])
+__getattr__ = create_optional_getattr(
+    __name__,
+    [
+        ("LokyExecutor", "ihate_work.util.concurrency.loky_executor", "loky"),
+    ],
+)

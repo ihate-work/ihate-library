@@ -14,9 +14,7 @@ except ImportError:
 
 class EmbeddingModel(StrEnum):
     granite_embedding_278m = "granite-embedding:278m"  # multilingual, dim=768
-    paraphrase_multilingual = (
-        "paraphrase-multilingual:278m"  # multilingual, long-context capable, dim=768
-    )
+    paraphrase_multilingual = "paraphrase-multilingual:278m"  # multilingual, long-context capable, dim=768
     mxbai_embed_large = "mxbai-embed-large"  # eng only, dim=1024
 
     def to_embedding(self, *, base_url=None, **kwargs) -> Embeddings:

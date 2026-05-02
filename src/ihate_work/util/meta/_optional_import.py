@@ -53,10 +53,7 @@ def create_optional_getattr(
         elif len(entry) == 3:
             attr_name, source_mod, pip_pkg = entry
         else:
-            raise ValueError(
-                f"optional entry must be a 2- or 3-tuple, "
-                f"got {len(entry)}: {entry!r}"
-            )
+            raise ValueError(f"optional entry must be a 2- or 3-tuple, got {len(entry)}: {entry!r}")
         lookup[attr_name] = (source_mod, pip_pkg)
 
     def __getattr__(name: str) -> object:
@@ -66,12 +63,9 @@ def create_optional_getattr(
                 mod = importlib.import_module(source_mod)
             except ImportError as exc:
                 raise ImportError(
-                    f"{module_name}.{name} requires the '{pip_pkg}' package. "
-                    f"Install it with:  pip install {pip_pkg}"
+                    f"{module_name}.{name} requires the '{pip_pkg}' package. Install it with:  pip install {pip_pkg}"
                 ) from exc
             return getattr(mod, name)
-        raise AttributeError(
-            f"module {module_name!r} has no attribute {name!r}"
-        )
+        raise AttributeError(f"module {module_name!r} has no attribute {name!r}")
 
     return __getattr__

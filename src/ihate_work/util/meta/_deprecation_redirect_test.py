@@ -14,9 +14,12 @@ def _make_module(name: str, redirects):
 
 
 def test_redirect_resolves():
-    mod = _make_module("old_pkg", [
-        ("Rater", "ihate_work.util.perf.rater", "Rater"),
-    ])
+    mod = _make_module(
+        "old_pkg",
+        [
+            ("Rater", "ihate_work.util.perf.rater", "Rater"),
+        ],
+    )
     with warnings.catch_warnings(record=True) as w:
         warnings.simplefilter("always")
         cls = mod.Rater
@@ -27,9 +30,12 @@ def test_redirect_resolves():
 
 
 def test_removal_date_in_message():
-    mod = _make_module("old_pkg", [
-        ("Rater", "ihate_work.util.perf.rater", "Rater", "2026-06"),
-    ])
+    mod = _make_module(
+        "old_pkg",
+        [
+            ("Rater", "ihate_work.util.perf.rater", "Rater", "2026-06"),
+        ],
+    )
     with warnings.catch_warnings(record=True) as w:
         warnings.simplefilter("always")
         mod.Rater
@@ -37,9 +43,12 @@ def test_removal_date_in_message():
 
 
 def test_missing_attr_raises():
-    mod = _make_module("old_pkg", [
-        ("Rater", "ihate_work.util.perf.rater", "Rater"),
-    ])
+    mod = _make_module(
+        "old_pkg",
+        [
+            ("Rater", "ihate_work.util.perf.rater", "Rater"),
+        ],
+    )
     with pytest.raises(AttributeError, match="no attribute 'Nope'"):
         mod.Nope
 

@@ -5,9 +5,7 @@ from datetime import datetime
 import dotenv as _dotenv
 
 _dotenv.load_dotenv(override=False)
-_log_format = (
-    "%(asctime)s %(levelname)s %(threadName)s %(name)s - %(funcName)s: %(message)s"
-)
+_log_format = "%(asctime)s %(levelname)s %(threadName)s %(name)s - %(funcName)s: %(message)s"
 logging.basicConfig(
     level=logging.INFO,
     format=_log_format,

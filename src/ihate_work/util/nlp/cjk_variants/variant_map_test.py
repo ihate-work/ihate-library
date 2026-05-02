@@ -192,15 +192,7 @@ class TestParseOpenccTsv:
 class TestParseSudachiIgnore:
     def test_extracts_ignore_chars(self, tmp_path: Path):
         f = tmp_path / "rewrite.def"
-        f.write_text(
-            "# some header\n"
-            "# ignore normalize list\n"
-            "#   ^{char}%n\n"
-            "髙\n"
-            "﨑\n"
-            "# replace char list\n"
-            "A\tB\n"
-        )
+        f.write_text("# some header\n# ignore normalize list\n#   ^{char}%n\n髙\n﨑\n# replace char list\nA\tB\n")
         chars = _parse_sudachi_ignore(f)
         assert "髙" in chars
         assert "﨑" in chars
@@ -208,12 +200,7 @@ class TestParseSudachiIgnore:
 
     def test_only_single_chars(self, tmp_path: Path):
         f = tmp_path / "rewrite.def"
-        f.write_text(
-            "# ignore normalize list\n"
-            "髙\n"
-            "multi\n"
-            "# replace char list\n"
-        )
+        f.write_text("# ignore normalize list\n髙\nmulti\n# replace char list\n")
         chars = _parse_sudachi_ignore(f)
         assert "髙" in chars
         assert "multi" not in chars

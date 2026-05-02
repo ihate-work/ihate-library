@@ -32,11 +32,13 @@ def _dump_handler(signum: int, frame: types.FrameType | None) -> None:
         sys.exit(1)
 
     snapshot = tracemalloc.take_snapshot()
-    snapshot = snapshot.filter_traces([
-        tracemalloc.Filter(False, "<frozen importlib._bootstrap>"),
-        tracemalloc.Filter(False, "<frozen importlib._bootstrap_external>"),
-        tracemalloc.Filter(False, "<unknown>"),
-    ])
+    snapshot = snapshot.filter_traces(
+        [
+            tracemalloc.Filter(False, "<frozen importlib._bootstrap>"),
+            tracemalloc.Filter(False, "<frozen importlib._bootstrap_external>"),
+            tracemalloc.Filter(False, "<unknown>"),
+        ]
+    )
 
     stats = snapshot.statistics("lineno")
 
@@ -52,7 +54,13 @@ def _dump_handler(signum: int, frame: types.FrameType | None) -> None:
     pid = os.getpid()
     msg = "\n".join(lines)
     print(f"[pid={pid}] {msg}", file=sys.stderr, flush=True)
-    logger.info("mem_dump_on_signal", pid=pid, signal=sig_name, tracked_mib=f"{total_mb:.1f}", top_n=len(stats[:_DEFAULT_TOP_N]))
+    logger.info(
+        "mem_dump_on_signal",
+        pid=pid,
+        signal=sig_name,
+        tracked_mib=f"{total_mb:.1f}",
+        top_n=len(stats[:_DEFAULT_TOP_N]),
+    )
 
     sys.exit(1)
 

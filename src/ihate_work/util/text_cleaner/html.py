@@ -9,9 +9,7 @@ def clean_html(html_content: str) -> str:
     soup = BeautifulSoup(html_content, "html.parser")
 
     # Remove comments
-    for comment in soup.find_all(
-        text=lambda text: isinstance(text, str) and "<!--" in text
-    ):
+    for comment in soup.find_all(text=lambda text: isinstance(text, str) and "<!--" in text):
         comment.extract()
 
     # Remove all attributes from tags

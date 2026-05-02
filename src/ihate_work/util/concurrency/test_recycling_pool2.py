@@ -134,10 +134,7 @@ class TestRecyclingPool2:
             elapsed = time.monotonic() - start
 
             assert result == 1024
-            assert elapsed < 2.0, (
-                f"fast task took {elapsed:.1f}s — should not have waited "
-                "for old pool's 3s sleep"
-            )
+            assert elapsed < 2.0, f"fast task took {elapsed:.1f}s — should not have waited for old pool's 3s sleep"
 
             # Clean up the slow task.
             slow_future.result(timeout=10)

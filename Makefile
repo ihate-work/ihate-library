@@ -1,7 +1,7 @@
 PYTHON_VER ?= 3.13
 UV_PIP_INSTALL = UV_PYTHON=.venv uv pip install
 
-.PHONY: setup sync lint format typecheck test clean
+.PHONY: setup sync format typecheck test clean
 
 setup: .venv/.deps_installed
 
@@ -17,12 +17,8 @@ sync: .venv/.venv_created
 	$(UV_PIP_INSTALL) -r requirements.txt --editable .
 	@touch .venv/.deps_installed
 
-lint:
-	.venv/bin/ruff check src tests
-
 format:
-	.venv/bin/ruff check --fix src tests
-	.venv/bin/ruff format src tests
+	npx dprint fmt .
 
 typecheck:
 	.venv/bin/mypy src

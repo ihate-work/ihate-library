@@ -23,9 +23,7 @@ class GcpGeminiBare(StrEnum):
     gemini15_flash_8b = "gemini-1.5-flash-8b"
 
     @classmethod
-    def upload_file(
-        kls, file_path: str | Path, *, client: genai.Client | None = None
-    ) -> genai_types.File:
+    def upload_file(kls, file_path: str | Path, *, client: genai.Client | None = None) -> genai_types.File:
         if not client:
             client = get_gemini_client()
         return client.files.upload(file_path)
@@ -45,9 +43,7 @@ class GcpGeminiBare(StrEnum):
         response = client.models.generate_content(
             model=self.value,
             contents=contents,
-            config=genai_types.GenerateContentConfig(
-                temperature=kwargs.get("temperature", 0.1)
-            ),
+            config=genai_types.GenerateContentConfig(temperature=kwargs.get("temperature", 0.1)),
         )
         return response.text
 
@@ -99,9 +95,7 @@ def _build_parts(
         if isinstance(s, Path):
             file_bytes = s.read_bytes()
             mime_type = mimetypes.guess_type(s)[0]
-            contents.append(
-                genai_types.Part.from_bytes(data=file_bytes, mime_type=mime_type)
-            )
+            contents.append(genai_types.Part.from_bytes(data=file_bytes, mime_type=mime_type))
         elif isinstance(s, str):
             contents.append(s)
         elif isinstance(s, genai_types.File):

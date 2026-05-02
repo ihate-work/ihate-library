@@ -15,9 +15,7 @@ def setup_langfuse_otel(validate=False):
             f"{os.environ.get('LANGFUSE_PUBLIC_KEY')}:{os.environ.get('LANGFUSE_SECRET_KEY')}".encode()
         ).decode()
         os.environ["OTEL_EXPORTER_OTLP_ENDPOINT"] = LANGFUSE_HOST + "/api/public/otel"
-        os.environ["OTEL_EXPORTER_OTLP_HEADERS"] = (
-            f"Authorization=Basic {LANGFUSE_AUTH}"
-        )
+        os.environ["OTEL_EXPORTER_OTLP_HEADERS"] = f"Authorization=Basic {LANGFUSE_AUTH}"
         # Verify connection
         if validate:
             from langfuse import get_client
@@ -26,9 +24,7 @@ def setup_langfuse_otel(validate=False):
             if langfuse_client.auth_check():
                 logger.info("Langfuse client is authenticated and ready!")
             else:
-                logger.warning(
-                    "Authentication failed. Please check your credentials and host."
-                )
+                logger.warning("Authentication failed. Please check your credentials and host.")
         else:
             logger.info("Langfuse client check skipped.")
     else:

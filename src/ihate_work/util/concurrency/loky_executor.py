@@ -95,9 +95,7 @@ def _process_worker_countdown(
             if call_item is None:
                 mp.util.info("Shutting down worker on sentinel")
         except queue.Empty:
-            mp.util.info(
-                f"Shutting down worker after timeout {timeout:0.3f}s"
-            )
+            mp.util.info(f"Shutting down worker after timeout {timeout:0.3f}s")
             if processes_management_lock.acquire(block=False):
                 processes_management_lock.release()
                 call_item = None
@@ -137,9 +135,7 @@ def _process_worker_countdown(
 
         # ── Task-count retirement ──
         if max_tasks is not None and tasks_completed >= max_tasks:
-            mp.util.info(
-                f"Worker {pid}: reached max_tasks={max_tasks}, retiring"
-            )
+            mp.util.info(f"Worker {pid}: reached max_tasks={max_tasks}, retiring")
             result_queue.put(pid)
             with worker_exit_lock:
                 mp.util.debug("Exit due to task-count retirement")
@@ -166,9 +162,7 @@ def _process_worker_countdown(
                     mp.util.debug("Exit due to memory leak")
                     return
         else:
-            if _last_memory_leak_check is None or (
-                time() - _last_memory_leak_check > _MEMORY_LEAK_CHECK_DELAY
-            ):
+            if _last_memory_leak_check is None or (time() - _last_memory_leak_check > _MEMORY_LEAK_CHECK_DELAY):
                 gc.collect()
                 _last_memory_leak_check = time()
 
@@ -176,6 +170,7 @@ def _process_worker_countdown(
 # ---------------------------------------------------------------------------
 # Worker o11y bootstrap (must be module-level for pickling)
 # ---------------------------------------------------------------------------
+
 
 def _init_worker_with_o11y(user_initializer, user_initargs):
     """Wraps the user initializer to set up o11y first.
@@ -196,6 +191,7 @@ def _init_worker_with_o11y(user_initializer, user_initargs):
 # ---------------------------------------------------------------------------
 # Warm-up sentinel
 # ---------------------------------------------------------------------------
+
 
 def _warmup_noop():
     """Dummy callable submitted during prefork warm-up."""
@@ -295,8 +291,7 @@ class LokyExecutor(ProcessPoolExecutor):
             self._processes[p.pid] = p
 
         mp.util.debug(
-            f"Adjusted process count to {self._max_workers}: "
-            f"{[(p.name, pid) for pid, p in self._processes.items()]}"
+            f"Adjusted process count to {self._max_workers}: {[(p.name, pid) for pid, p in self._processes.items()]}"
         )
 
     # -- Prefork warm-up ------------------------------------------------
@@ -308,10 +303,7 @@ class LokyExecutor(ProcessPoolExecutor):
                 "warming up workers",
                 max_workers=self._max_workers,
             )
-            futs = [
-                super(LokyExecutor, self).submit(_warmup_noop)
-                for _ in range(self._max_workers)
-            ]
+            futs = [super(LokyExecutor, self).submit(_warmup_noop) for _ in range(self._max_workers)]
             for f in futs:
                 f.result(timeout=120)
             logger.info("all workers warm")

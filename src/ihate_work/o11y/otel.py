@@ -74,7 +74,5 @@ def _setup_otel_console():
 
     # Logs
     logger_provider = LoggerProvider()
-    logger_provider.add_log_record_processor(
-        BatchLogRecordProcessor(ConsoleLogExporter())
-    )
+    logger_provider.add_log_record_processor(BatchLogRecordProcessor(ConsoleLogExporter()))
     set_logger_provider(logger_provider)

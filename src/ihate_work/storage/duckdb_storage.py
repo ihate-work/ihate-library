@@ -41,7 +41,7 @@ class DuckdbStorage:
     readers (e.g. web workers serving queries while a writer ingests data).
     """
 
-    def __init__(self, db_path: str | Path = ':memory:', *, read_only: bool = False):
+    def __init__(self, db_path: str | Path = ":memory:", *, read_only: bool = False):
         self._db_path = str(db_path)
         if self._db_path != ":memory:":
             self._db = Path(self._db_path)
@@ -163,9 +163,7 @@ class DuckdbStorage:
         finally:
             cur.close()
 
-    def query_named_tuple(
-        self, sql: str, row_type: type[T_NamedTuple], *, parameters=None
-    ) -> list[T_NamedTuple]:
+    def query_named_tuple(self, sql: str, row_type: type[T_NamedTuple], *, parameters=None) -> list[T_NamedTuple]:
         """Run sql and return rows as instances of `row_type` (a NamedTuple class)."""
         cur = self.cursor()
         try:
@@ -222,9 +220,7 @@ class DuckdbStorage:
         finally:
             cur.close()
 
-    def query_df_chunk(
-        self, sql: str, *, parameters=None, chunk_size=64
-    ) -> Generator[pd.DataFrame, None, None]:
+    def query_df_chunk(self, sql: str, *, parameters=None, chunk_size=64) -> Generator[pd.DataFrame, None, None]:
         cur = self.cursor()
         try:
             cur.execute(sql, parameters=parameters)

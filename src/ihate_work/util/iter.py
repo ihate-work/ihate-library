@@ -12,9 +12,7 @@ T2 = TypeVar("T2")
 
 
 # polyfill for itertools.batched
-def batched(
-    iterable: Iterable[T], batch_size: int, *, strict=False
-) -> Generator[tuple[T, ...], None, None]:
+def batched(iterable: Iterable[T], batch_size: int, *, strict=False) -> Generator[tuple[T, ...], None, None]:
     # batched('ABCDEFG', 3) → ABC DEF G
     if batch_size < 1:
         raise ValueError("n must be at least one")
@@ -31,9 +29,7 @@ class IteratorChain(Generic[T], Iterator[T]):
             self._inner = maybe_iterator
         else:
             self._inner = iter(maybe_iterator)
-            assert isinstance(self._inner, Iterator), (
-                "input must be Iterable or Iterator"
-            )
+            assert isinstance(self._inner, Iterator), "input must be Iterable or Iterator"
         self._moved = False
 
     def take(self, n: int) -> "IteratorChain[T]":
@@ -109,9 +105,7 @@ class IteratorChain(Generic[T], Iterator[T]):
 
         return self._replace(yielder())
 
-    def flatmap(
-        self, f: Callable[[T], Iterator[T2] | Iterable[T2]]
-    ) -> "IteratorChain[T2]":
+    def flatmap(self, f: Callable[[T], Iterator[T2] | Iterable[T2]]) -> "IteratorChain[T2]":
         assert callable(f), "f must be a callable"
         assert not self._moved, "Cannot reuse a dropped lift"
 

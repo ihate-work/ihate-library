@@ -91,9 +91,7 @@ class PrefixCounter:
     def pprint(self, indent=0) -> list[str]:
         this = " " * indent + str(self)
         ret = [this]
-        for child in sorted(
-            self.__children.values(), key=lambda c: c.count, reverse=True
-        ):
+        for child in sorted(self.__children.values(), key=lambda c: c.count, reverse=True):
             ret += child.pprint(indent + 2)
 
         return ret

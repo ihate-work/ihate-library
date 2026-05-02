@@ -37,9 +37,7 @@ def report_memory_usage() -> None:
     Call ``setup_mem_profiler()`` once before using this function.
     """
     if _muppy is None or _summary is None:
-        raise RuntimeError(
-            "pympler not loaded — call setup_mem_profiler() first"
-        )
+        raise RuntimeError("pympler not loaded — call setup_mem_profiler() first")
     all_objects = _muppy.get_objects()
     sum1 = _summary.summarize(all_objects)
     _summary.print_(sum1)

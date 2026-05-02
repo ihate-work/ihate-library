@@ -14,9 +14,7 @@ logger, *_ = get_o11y(__name__)
 
 class PgStorage:
     def __init__(self, connection_string: str, *, minconn=1, maxconn=4):
-        self._pool = psycopg2.pool.ThreadedConnectionPool(
-            minconn, maxconn, connection_string
-        )
+        self._pool = psycopg2.pool.ThreadedConnectionPool(minconn, maxconn, connection_string)
         logger.info("pool_created", minconn=minconn, maxconn=maxconn)
 
     def close(self):
@@ -44,9 +42,7 @@ class PgStorage:
     # ── Query methods ──
 
     def list_tables_as_tuple(self) -> list[tuple]:
-        return self.query_tuple(
-            "SELECT tablename FROM pg_tables WHERE schemaname = 'public'"
-        )
+        return self.query_tuple("SELECT tablename FROM pg_tables WHERE schemaname = 'public'")
 
     def query_df(self, query: str, *, parameters=None) -> pd.DataFrame:
         logger.debug("query_df", sql=query)
@@ -71,9 +67,7 @@ class PgStorage:
                 logger.debug("query_dict_done", row_count=len(rows))
                 return rows
 
-    def query_tuple_stream(
-        self, sql: str, *, parameters=None, chunk_size=512
-    ) -> Generator[tuple, None, None]:
+    def query_tuple_stream(self, sql: str, *, parameters=None, chunk_size=512) -> Generator[tuple, None, None]:
         logger.debug("query_tuple_stream", sql=sql, chunk_size=chunk_size)
         cursor_name = f"pg_stream_{uuid.uuid4().hex[:8]}"
         with self.use_conn() as conn:
@@ -86,15 +80,11 @@ class PgStorage:
                         return
                     yield from rows
 
-    def query_dict_stream(
-        self, sql: str, *, parameters=None, chunk_size=512
-    ) -> Generator[dict, None, None]:
+    def query_dict_stream(self, sql: str, *, parameters=None, chunk_size=512) -> Generator[dict, None, None]:
         logger.debug("query_dict_stream", sql=sql, chunk_size=chunk_size)
         cursor_name = f"pg_stream_{uuid.uuid4().hex[:8]}"
         with self.use_conn() as conn:
-            with conn.cursor(
-                name=cursor_name, cursor_factory=psycopg2.extras.RealDictCursor
-            ) as cur:
+            with conn.cursor(name=cursor_name, cursor_factory=psycopg2.extras.RealDictCursor) as cur:
                 cur.itersize = chunk_size
                 cur.execute(sql, parameters)
                 while True:
@@ -103,9 +93,7 @@ class PgStorage:
                         return
                     yield from (dict(row) for row in rows)
 
-    def query_df_chunk(
-        self, sql: str, *, parameters=None, chunk_size=64
-    ) -> Generator[pd.DataFrame, None, None]:
+    def query_df_chunk(self, sql: str, *, parameters=None, chunk_size=64) -> Generator[pd.DataFrame, None, None]:
         logger.debug("query_df_chunk", sql=sql, chunk_size=chunk_size)
         cursor_name = f"pg_chunk_{uuid.uuid4().hex[:8]}"
         with self.use_conn() as conn:

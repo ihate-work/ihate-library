@@ -27,6 +27,4 @@ def with_sqlite_cache(
     byte_store = SqliteByteStore(cache_db_path)
 
     # Wrap the embedding with the byte store
-    return CacheBackedEmbeddings.from_bytes_store(
-        underlying_embeddings, byte_store, namespace=namespace
-    )
+    return CacheBackedEmbeddings.from_bytes_store(underlying_embeddings, byte_store, namespace=namespace)

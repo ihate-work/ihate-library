@@ -42,9 +42,7 @@ def run_in_workers(
         pending = set()
         for new_task in create_tasks(executor):
             if new_task is None:
-                pending = wait_pending(
-                    all_futures, pending, 0, raise_on_exception=raise_on_exception
-                )
+                pending = wait_pending(all_futures, pending, 0, raise_on_exception=raise_on_exception)
                 continue
             pending.add(new_task)
             all_futures.append(new_task)
@@ -54,7 +52,5 @@ def run_in_workers(
                 task_queue_length,
                 raise_on_exception=raise_on_exception,
             )
-    pending = wait_pending(
-        all_futures, pending, 0, raise_on_exception=raise_on_exception
-    )
+    pending = wait_pending(all_futures, pending, 0, raise_on_exception=raise_on_exception)
     return all_futures

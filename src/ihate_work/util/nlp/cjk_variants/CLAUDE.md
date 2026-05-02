@@ -1,4 +1,3 @@
-
 # nlp.variants_dict
 
 A standalone package for CJK variant character (異体字) normalization, to enhance search recall when indexing and querying terms.
@@ -10,12 +9,12 @@ Developed independently — no dependency on `nlp.tokenizer` or spaCy.
 CJK text has many characters that are **semantically identical but have different Unicode codepoints**. This causes search misses:
 
 | User searches | Indexed as | Match? |
-|---|---|---|
-| 渡**辺** | 渡**邊** | miss |
-| **学**園 | **學**園 | miss |
-| **国**語 | **國**語 | miss |
-| 弁当 | 辨当 | miss |
-| **髙**橋 | **高**橋 | miss |
+| ------------- | ---------- | ------ |
+| 渡**辺**      | 渡**邊**   | miss   |
+| **学**園      | **學**園   | miss   |
+| **国**語      | **國**語   | miss   |
+| 弁当          | 辨当       | miss   |
+| **髙**橋      | **高**橋   | miss   |
 
 These fall into overlapping categories:
 
@@ -25,6 +24,7 @@ These fall into overlapping categories:
 4. **Unicode normalization gaps** — NFKC handles some but deliberately excludes ~835 CJK characters (Kangxi radicals, compatibility ideographs)
 
 Standard tools solve parts but not all:
+
 - **Unicode NFKC**: handles full-width/half-width, some compatibility ideographs. Misses itaiji, shin/kyujitai.
 - **SudachiPy `.normalized_form()`**: handles orthographic variants at the **word** level (附属→付属, 呑む→飲む). Misses character-level variants in names/titles that aren't in its dictionary.
 - **spaCy lemmatization**: operates on morphology, not glyph variants.
@@ -35,12 +35,12 @@ Standard tools solve parts but not all:
 
 Variant characters form **clusters** (equivalence classes). A pair is just a cluster of size 2.
 
-| Cluster | Members | Representative |
-|---|---|---|
-| pair | 髙, 高 | 高 |
-| cluster | 辺, 邊, 邉 | 辺 |
-| cluster | 弁, 辨, 辯, 瓣, 辦 | 弁 |
-| cluster | 国, 國, 囯, 囻 | 国 |
+| Cluster | Members            | Representative |
+| ------- | ------------------ | -------------- |
+| pair    | 髙, 高             | 高             |
+| cluster | 辺, 邊, 邉         | 辺             |
+| cluster | 弁, 辨, 辯, 瓣, 辦 | 弁             |
+| cluster | 国, 國, 囯, 囻     | 国             |
 
 Each cluster has exactly one **representative** (canonical form) — prefer shinjitai / simplified / most common modern form.
 
@@ -48,12 +48,21 @@ The runtime data structure is a flat `dict[str, str]` — every non-representati
 
 ```python
 # Internal lookup table (built from clusters)
-_table = str.maketrans({
-    "國": "国", "囯": "国", "囻": "国",
-    "邊": "辺", "邉": "辺",
-    "辨": "弁", "辯": "弁", "瓣": "弁", "辦": "弁",
-    "髙": "高",
-})
+_table = str.maketrans(
+    {
+        "國": "国",
+        "囯": "国",
+        "囻": "国",
+        "邊": "辺",
+        "邉": "辺",
+        "辨": "弁",
+        "辯": "弁",
+        "瓣": "弁",
+        "辦": "弁",
+        "髙": "高",
+    }
+)
+
 
 def normalize(text: str) -> str:
     return text.translate(_table)
@@ -63,13 +72,13 @@ One `str.translate()` call per string — C-level loop, O(n) in string length, n
 
 ## Data sources
 
-| Source | What it provides | Format | License |
-|---|---|---|---|
-| [OpenCC `JPVariants.txt`](https://github.com/BYVoid/OpenCC/tree/master/data/dictionary) | Traditional → Japanese shinjitai (~450 entries) | TSV | Apache-2.0 |
-| [OpenCC `JPShinjitaiCharacters.txt`](https://github.com/BYVoid/OpenCC/tree/master/data/dictionary) | Shinjitai → multiple kyujitai (1-to-many, e.g. 弁→辨辯瓣辦弁) | TSV | Apache-2.0 |
-| [OpenCC `TSCharacters.txt` / `STCharacters.txt`](https://github.com/BYVoid/OpenCC/tree/master/data/dictionary) | Traditional ↔ Simplified Chinese character mappings | TSV | Apache-2.0 |
-| [tobunken 異体字リスト](https://www.tobunken.go.jp/archives/%E7%95%B0%E4%BD%93%E5%AD%97%E3%83%AA%E3%82%B9%E3%83%88/) | Japanese itaiji database (web-searchable) | Web DB | Reference/validation |
-| SudachiPy `rewrite.def` | NFKC ignore list (~835 chars), dakuten combining rules (~182 rules) | Custom | Apache-2.0 |
+| Source                                                                                                               | What it provides                                                    | Format | License              |
+| -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- | ------ | -------------------- |
+| [OpenCC `JPVariants.txt`](https://github.com/BYVoid/OpenCC/tree/master/data/dictionary)                              | Traditional → Japanese shinjitai (~450 entries)                     | TSV    | Apache-2.0           |
+| [OpenCC `JPShinjitaiCharacters.txt`](https://github.com/BYVoid/OpenCC/tree/master/data/dictionary)                   | Shinjitai → multiple kyujitai (1-to-many, e.g. 弁→辨辯瓣辦弁)       | TSV    | Apache-2.0           |
+| [OpenCC `TSCharacters.txt` / `STCharacters.txt`](https://github.com/BYVoid/OpenCC/tree/master/data/dictionary)       | Traditional ↔ Simplified Chinese character mappings                 | TSV    | Apache-2.0           |
+| [tobunken 異体字リスト](https://www.tobunken.go.jp/archives/%E7%95%B0%E4%BD%93%E5%AD%97%E3%83%AA%E3%82%B9%E3%83%88/) | Japanese itaiji database (web-searchable)                           | Web DB | Reference/validation |
+| SudachiPy `rewrite.def`                                                                                              | NFKC ignore list (~835 chars), dakuten combining rules (~182 rules) | Custom | Apache-2.0           |
 
 ## References
 
@@ -99,14 +108,15 @@ from ihate_work.domains.bgm_archive.nlp.variants_dict import VariantMap
 vm = VariantMap()  # loads from bundled data/variants.jsonl
 
 # Primary operation — normalize every char to its cluster representative:
-vm.normalize("渡邊義經")     # → "渡辺義経"  (str.translate, C-speed)
+vm.normalize("渡邊義經")  # → "渡辺義経"  (str.translate, C-speed)
 
 # Auxiliary operations:
-vm.representative("國")      # → "国"
-vm.cluster("國")             # → frozenset({"国", "國", "囯", "囻"})
+vm.representative("國")  # → "国"
+vm.cluster("國")  # → frozenset({"国", "國", "囯", "囻"})
 ```
 
 Key design decisions:
+
 - **Cluster model** — variant characters form equivalence classes (clusters), each with one representative
 - **Character-level, not word-level** — maps individual codepoints via `str.translate()`, composes over strings
 - **Normalize-both** — normalize at both index time and query time to the same representative. Simple, deterministic, no combinatorial blowup.
@@ -169,11 +179,11 @@ ORDER BY matched_terms DESC, raw_score DESC;
 
 Example: query `学園アリス` against 3 documents:
 
-| doc_id | title (raw) | What happens |
-|---|---|---|
-| 1 | 學園アリス | 學園→学園 via normalization (variant hit, 1.0) + アリス exact (2.0) = **3.0** |
-| 2 | 学園アリス | Both exact hits = **4.0** (ranks highest) |
-| 3 | 渡邊のアニメ | No matching tokens |
+| doc_id | title (raw)  | What happens                                                                  |
+| ------ | ------------ | ----------------------------------------------------------------------------- |
+| 1      | 學園アリス   | 學園→学園 via normalization (variant hit, 1.0) + アリス exact (2.0) = **3.0** |
+| 2      | 学園アリス   | Both exact hits = **4.0** (ranks highest)                                     |
+| 3      | 渡邊のアニメ | No matching tokens                                                            |
 
 The exact-vs-variant distinction slots in as a multiplier on top of whatever scoring formula (BM25, TF-IDF) is used.
 

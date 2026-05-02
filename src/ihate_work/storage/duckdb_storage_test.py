@@ -131,11 +131,13 @@ def test_query_df_chunk_with_parameters(tmp_path):
     db = DuckdbStorage(tmp_path / "test.duckdb")
     db.execute("CREATE TABLE t (id INTEGER, val FLOAT)")
     db.execute("INSERT INTO t VALUES (1, 1.0), (2, 2.0), (3, 3.0)")
-    chunks = list(db.query_df_chunk(
-        "SELECT * FROM t WHERE id > $1 ORDER BY id",
-        parameters=(1,),
-        chunk_size=1,
-    ))
+    chunks = list(
+        db.query_df_chunk(
+            "SELECT * FROM t WHERE id > $1 ORDER BY id",
+            parameters=(1,),
+            chunk_size=1,
+        )
+    )
     assert len(chunks) >= 1
     all_ids = sorted(int(row) for chunk in chunks for row in chunk["id"])
     assert all_ids == [2, 3]
@@ -162,9 +164,7 @@ def test_multiple_readonly_opens_same_process(tmp_path):
     r3 = DuckdbStorage(db_path, read_only=True)
 
     for r in (r1, r2, r3):
-        rows: list[tuple[int, str]] = r.query_typed_tuple(
-            "SELECT * FROM t ORDER BY id"
-        )
+        rows: list[tuple[int, str]] = r.query_typed_tuple("SELECT * FROM t ORDER BY id")
         assert rows == [(1, "alice"), (2, "bob")]
 
 
@@ -188,14 +188,13 @@ def test_second_rw_same_process_ok(tmp_path):
     rw1 = DuckdbStorage(db_path, read_only=False)
     rw2 = DuckdbStorage(db_path, read_only=False)
 
-    rows: list[tuple[int, str]] = rw2.query_typed_tuple(
-        "SELECT * FROM t ORDER BY id"
-    )
+    rows: list[tuple[int, str]] = rw2.query_typed_tuple("SELECT * FROM t ORDER BY id")
     assert rows == [(1, "alice"), (2, "bob")]
     del rw1  # just proving both coexist
 
 
 # ── Multi-process tests (actual OS-level lock contention) ──
+
 
 def _run_duckdb_subprocess(db_path: str, read_only: bool) -> subprocess.Popen:
     """Spawn a child that opens the db, prints READY, then waits for EOF on stdin."""

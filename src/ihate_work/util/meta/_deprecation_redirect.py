@@ -43,14 +43,9 @@ def create_redirection_getattr(
         elif len(entry) == 4:
             name, new_pkg, new_name, removal_date = entry
         else:
-            raise ValueError(
-                f"redirect entry must be 3- or 4-tuple, got {len(entry)}: {entry!r}"
-            )
+            raise ValueError(f"redirect entry must be 3- or 4-tuple, got {len(entry)}: {entry!r}")
         if removal_date is not None and not _DATE_RE.fullmatch(removal_date):
-            raise ValueError(
-                f"removal_date must match YYYY, YYYY-MM, or YYYY-MM-DD, "
-                f"got {removal_date!r}"
-            )
+            raise ValueError(f"removal_date must match YYYY, YYYY-MM, or YYYY-MM-DD, got {removal_date!r}")
         lookup[name] = (new_pkg, new_name, removal_date)
 
     def __getattr__(name: str) -> object:

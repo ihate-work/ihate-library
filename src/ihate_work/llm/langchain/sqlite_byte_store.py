@@ -66,9 +66,7 @@ class SqliteByteStore(BaseStore[str, bytes]):
 
         # Execute the query
         with self.conn:
-            cursor = self.conn.execute(
-                f"SELECT key, value FROM byte_store WHERE key IN ({placeholders})", keys
-            )
+            cursor = self.conn.execute(f"SELECT key, value FROM byte_store WHERE key IN ({placeholders})", keys)
 
             # Create a dictionary of key-value pairs from the results
             results_dict = {key: value for key, value in cursor.fetchall()}
@@ -114,9 +112,7 @@ class SqliteByteStore(BaseStore[str, bytes]):
 
         # Execute the query
         with self.conn:
-            self.conn.execute(
-                f"DELETE FROM byte_store WHERE key IN ({placeholders})", keys
-            )
+            self.conn.execute(f"DELETE FROM byte_store WHERE key IN ({placeholders})", keys)
 
     def delete(self, key: str) -> None:
         return self.mdelete([key])
@@ -139,9 +135,7 @@ class SqliteByteStore(BaseStore[str, bytes]):
         else:
             # Get keys with the given prefix
             with self.conn:
-                cursor = self.conn.execute(
-                    "SELECT key FROM byte_store WHERE key LIKE ?", (f"{prefix}%",)
-                )
+                cursor = self.conn.execute("SELECT key FROM byte_store WHERE key LIKE ?", (f"{prefix}%",))
                 for (key,) in cursor.fetchall():
                     yield key
 

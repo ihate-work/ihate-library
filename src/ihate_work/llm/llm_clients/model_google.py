@@ -12,9 +12,7 @@ class GcpGeminiBare(StrEnum):
     def complete_with_json_v0(self, user_content: str) -> list[genai_types.Candidate]:
         client = _get_client(project="vertex-ai-sandbox", location="us-central1")
 
-        response = client.models.generate_content(
-            model=self.value, contents=user_content
-        )
+        response = client.models.generate_content(model=self.value, contents=user_content)
         return response.candidates or []
 
     def generate_content(self, user_content: str) -> list[genai_types.Candidate]:

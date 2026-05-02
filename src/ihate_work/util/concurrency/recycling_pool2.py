@@ -26,11 +26,7 @@ def _worker_init_wrapper(user_init: Callable | None, gen: int):
 
 def _shutdown_pool(pool: ProcessPoolExecutor, gen: int):
     """Shut down *pool*, logging each worker PID on exit."""
-    worker_pids = (
-        list(pool._processes.keys())
-        if hasattr(pool, "_processes") and pool._processes
-        else []
-    )
+    worker_pids = list(pool._processes.keys()) if hasattr(pool, "_processes") and pool._processes else []
     pool.shutdown(wait=True)
     for pid in worker_pids:
         logger.info("worker process ended", pid=pid, pool_gen=gen)
@@ -74,10 +70,13 @@ class RecyclingPool2:
     def _new_pool(self) -> ProcessPoolExecutor:
         self._gen += 1
         init = functools.partial(
-            _worker_init_wrapper, self._initializer, self._gen,
+            _worker_init_wrapper,
+            self._initializer,
+            self._gen,
         )
         return ProcessPoolExecutor(
-            max_workers=self._max_workers, initializer=init,
+            max_workers=self._max_workers,
+            initializer=init,
         )
 
     def __enter__(self):
@@ -129,9 +128,7 @@ class RecyclingPool2:
             self._pool = self._new_pool()
             self._tasks = 0
             # Prune finished cleanup threads.
-            self._cleanup_threads = [
-                t for t in self._cleanup_threads if t.is_alive()
-            ]
+            self._cleanup_threads = [t for t in self._cleanup_threads if t.is_alive()]
             # Retire old pool in background — shutdown(wait=True) blocks
             # until all its in-flight futures complete, then frees OS
             # resources (worker processes).

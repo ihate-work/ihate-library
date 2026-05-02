@@ -98,9 +98,7 @@ class PolymorphicCallable(Generic[P, R]):
             if "_poly_callable_caches" in st.session_state:
                 all_cache_storage = st.session_state[cache_key]
             else:
-                st.session_state[cache_key] = (
-                    all_cache_storage := defaultdict(lambda: CacheStorage())
-                )
+                st.session_state[cache_key] = (all_cache_storage := defaultdict(lambda: CacheStorage()))
             cache_storage = all_cache_storage[self._callable_sig]
         return PolymorphicCallable(self._callable, self._callable_sig, cache_storage)
 

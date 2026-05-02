@@ -5,12 +5,15 @@ Performance measurement, profiling, and diagnostics utilities.
 ## Modules
 
 ### `rater.py` — Throughput tracker
+
 Immutable `Rater` class that tracks (count, timestamp) pairs. Call `.tick(n)` to record progress, read `.rate` (instant), `.avg_rate` (overall), `.total`, `.elapsed`.
 
 ### `mem_profiler.py` — Object-level memory profiling (pympler)
+
 Lazy-imports pympler. Call `setup_mem_profiler()` once (raises `ImportError` if pympler not installed), then `report_memory_usage()` to print object type/size summary.
 
 ### `mem_dump.py` — Allocation dump on signal (tracemalloc)
+
 `setup_mem_dump_on_signal(signals=(SIGTERM,), nframes=5)` — starts tracemalloc and registers signal handlers. On signal, dumps top allocation sites (file:line) to stderr. Designed for earlyoom SIGTERM; also useful with SIGUSR1 for on-demand dumps.
 
 ## Import

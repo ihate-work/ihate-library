@@ -10,6 +10,7 @@ from ihate_work.util.concurrency.loky_executor import LokyExecutor
 
 # -- Helpers (module-level for picklability) --------------------------------
 
+
 def _worker_pid(_: object = None) -> int:
     return os.getpid()
 
@@ -39,7 +40,6 @@ def _get_marker() -> int | None:
 
 
 class TestLokyExecutor:
-
     def test_basic_submit_and_result(self):
         with LokyExecutor(2, retire_after_tasks=100, prefork=False) as pool:
             future = pool.submit(pow, 2, 10)

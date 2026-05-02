@@ -26,19 +26,14 @@ def _coerce_otel_value(val, _key=""):
     if isinstance(val, _OTLP_PRIMITIVES):
         return val
     if isinstance(val, dict):
-        return {
-            k: _coerce_otel_value(v, f"{_key}.{k}" if _key else k)
-            for k, v in val.items()
-        }
+        return {k: _coerce_otel_value(v, f"{_key}.{k}" if _key else k) for k, v in val.items()}
     if isinstance(val, (list, tuple)):
         return [_coerce_otel_value(v, f"{_key}[{i}]") for i, v in enumerate(val)]
     type_name = type(val).__qualname__
     pair = (_key, type_name)
     if pair not in _coerced_warned:
         _coerced_warned.add(pair)
-        logging.getLogger(__name__).warning(
-            "coerced non-OTLP value to str: key=%r type=%s", _key, type_name
-        )
+        logging.getLogger(__name__).warning("coerced non-OTLP value to str: key=%r type=%s", _key, type_name)
     return str(val)
 
 
@@ -101,9 +96,7 @@ def setup_structlog(
     root.setLevel(level)
 
     # Remove the default handler installed by __init__.py.
-    root.handlers = [
-        h for h in root.handlers if not getattr(h, "_ihate_work_default", False)
-    ]
+    root.handlers = [h for h in root.handlers if not getattr(h, "_ihate_work_default", False)]
 
     # OTel LoggingHandler subclass that normalizes all log records into a
     # consistent dict body before export.  Two problems it solves:
@@ -143,9 +136,7 @@ def setup_structlog(
                 record.msg = {
                     "message": record.getMessage(),
                     "level": record.levelname.lower(),
-                    "timestamp": datetime.fromtimestamp(
-                        record.created, tz=timezone.utc
-                    ).isoformat(),
+                    "timestamp": datetime.fromtimestamp(record.created, tz=timezone.utc).isoformat(),
                 }
                 record.args = None
 
@@ -205,28 +196,24 @@ def setup_structlog(
     def _local_renderer(renderer):
         if render_thread_name:
             return renderer
+
         def _strip_and_render(logger, method_name, event_dict):
             event_dict.pop("thread", None)
             return renderer(logger, method_name, event_dict)
+
         return _strip_and_render
 
     # Pretty-print to console
     if enable_console_log:
         console = logging.StreamHandler()
         console.setLevel(console_level if console_level is not None else level)
-        _suppressed = (
-            console_suppress if console_suppress is not None else ("sqlalchemy",)
-        )
+        _suppressed = console_suppress if console_suppress is not None else ("sqlalchemy",)
         if _suppressed:
             console.addFilter(lambda record: not record.name.startswith(_suppressed))
 
         console.setFormatter(
             structlog.stdlib.ProcessorFormatter(
-                processor=_local_renderer(
-                    structlog.dev.ConsoleRenderer(
-                        event_key="message", sort_keys=False
-                    )
-                ),
+                processor=_local_renderer(structlog.dev.ConsoleRenderer(event_key="message", sort_keys=False)),
                 foreign_pre_chain=foreign_pre_chain,
             )
         )
@@ -241,9 +228,7 @@ def setup_structlog(
         )
 
 
-def _setup_local_log_dir(
-    log_dir: str, level: int, foreign_pre_chain: list, local_renderer
-):
+def _setup_local_log_dir(log_dir: str, level: int, foreign_pre_chain: list, local_renderer):
     """
     If $IHATE_WORK_LOG_DIR is set, configure structlog to log to that directory.
     Useful for simpler local dev.
@@ -253,9 +238,7 @@ def _setup_local_log_dir(
     from datetime import date
 
     os.makedirs(log_dir, exist_ok=True)
-    path = os.path.join(
-        log_dir, f"log-{date.today().isoformat()}-pid{os.getpid()}.jsonl"
-    )
+    path = os.path.join(log_dir, f"log-{date.today().isoformat()}-pid{os.getpid()}.jsonl")
 
     file_handler = logging.FileHandler(path)
     file_handler.setLevel(level)
