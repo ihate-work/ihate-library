@@ -1,29 +1,46 @@
 PYTHON_VER ?= 3.13
+
+REQUIREMENTS_RUNTIME = -r requirements.txt
+REQUIREMENTS_DEV = -r requirements-dev.txt -r requirements.txt
+
 UV_PIP_INSTALL = UV_PYTHON=.venv uv pip install
 
 .PHONY: setup sync format typecheck test clean
 
-setup: .venv/.deps_installed
+default: runtime-deps
 
-.venv/.venv_created:
+# Dev deps (runtime + test/lint tools)
+deps: .venv/.dev_deps_installed
+
+# Runtime-only deps
+runtime-deps: .venv/.deps_installed
+
+.venv/.venv_created: Makefile
 	uv venv --python $(PYTHON_VER) .venv
 	@touch $@
+	@rm -fv .venv/.deps_installed .venv/.dev_deps_installed
 
 .venv/.deps_installed: .venv/.venv_created pyproject.toml requirements.txt
-	$(UV_PIP_INSTALL) -r requirements.txt --editable .
+	$(UV_PIP_INSTALL) $(REQUIREMENTS_RUNTIME)
+	@echo "runtime deps installed"
+	@touch $@
+
+.venv/.dev_deps_installed: .venv/.venv_created pyproject.toml requirements.txt requirements-dev.txt
+	$(UV_PIP_INSTALL) $(REQUIREMENTS_DEV)
+	@echo "dev deps installed"
 	@touch $@
 
 sync: .venv/.venv_created
-	$(UV_PIP_INSTALL) -r requirements.txt --editable .
-	@touch .venv/.deps_installed
+	$(UV_PIP_INSTALL) $(REQUIREMENTS_DEV)
+	@touch .venv/.dev_deps_installed
 
 format:
 	npx dprint fmt .
 
-typecheck:
+typecheck: deps
 	.venv/bin/mypy src
 
-test:
+test: deps
 	.venv/bin/pytest
 
 clean:

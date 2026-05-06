@@ -1,0 +1,37 @@
+name: Publish Python to PyPI
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "PyPI version (e.g. 2025.5.4)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  pypi-publish:
+    name: Upload release to PyPI
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/local-ihate-work
+    permissions:
+      id-token: write # mandatory for trusted publishing
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+
+      - name: Set version
+        run: sed -i 's/^version = .*/version = "${{ inputs.version }}"/' pyproject.toml
+
+      - name: Install pypa/build
+        run: python3 -m pip install build --user
+
+      - name: Build
+        run: python3 -m build --wheel --sdist
+
+      - uses: pypa/gh-action-pypi-publish@release/v1
